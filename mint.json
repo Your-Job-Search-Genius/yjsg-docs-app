@@ -75,11 +75,27 @@
       ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "Customers",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "api-reference/customers/get",
+        "api-reference/customers/getCustomer",
+        "api-reference/customers/create",
+        "api-reference/customers/delete"
+      ]
+    },
+    {
+      "group": "Packages",
+      "pages": [
+        "api-reference/packages/create",
+        "api-reference/packages/get",
+        "api-reference/packages/getPackage",
+        "api-reference/packages/update"
+      ]
+    },
+    {
+      "group": "Invoices",
+      "pages": [
+        "api-reference/invoices/pay"
       ]
     }
   ],

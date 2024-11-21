@@ -19,9 +19,9 @@
     }
   ],
   "paths": {
-    "/plants": {
+    "/customers": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "description": "Returns all customers of the client.",
         "parameters": [
           {
             "name": "limit",
@@ -31,17 +31,26 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "The maximum number of results to skip",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Customers response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Plant"
+                    "$ref": "#/components/schemas/Customer"
                   }
                 }
               }
@@ -60,13 +69,37 @@
         }
       },
       "post": {
-        "description": "Creates a new plant in the store",
+        "description": "Creates a new customer in the system.",
         "requestBody": {
-          "description": "Plant to add to the store",
+          "description": "Customer to add to the system.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "isPaidOutside"
+                ],
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Customer"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "isPaidOutside": {
+                        "type": "boolean",
+                        "description": "Will the customer pay outside our system. If the isPaidOutside is true then you have to use the payment api to refresh payment information every subscription cycle. If its false, you will redirect the user using the checkout link and payment will be taken on our system."
+                      },
+                      "uniqueCustomerId": {
+                        "type": "string",
+                        "description": "This is unique id of the user in your system"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -78,7 +111,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/CustomerResponse"
                 }
               }
             }
@@ -96,25 +129,410 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/customers/{_id}": {
+      "get": {
+        "description": "Returns all customers of the client.",
         "parameters": [
           {
-            "name": "id",
+            "name": "_id",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "ID of the customer to get (MongoDB ObjectId)",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customers response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "description": "ID of the customer in our system",
+                          "pattern": "^[a-fA-F0-9]{24}$",
+                          "example": "507f1f77bcf86cd799439011"
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/Customer"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "autoLogin": {
+                          "type": "object",
+                          "properties": {
+                            "autoLoginUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "example": "https://example.com/auto-login?token=abc123"
+                            },
+                            "autoLoginCode": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Deactivates a single customer based on the ID supplied",
+        "parameters": [
+          {
+            "name": "_id",
+            "in": "path",
+            "description": "ID of the customer to delete (MongoDB ObjectId)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$",
+              "example": "507f1f77bcf86cd799439011"
             }
           }
         ],
         "responses": {
           "204": {
             "description": "Plant deleted",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/packages": {
+      "get": {
+        "description": "Returns all packages of the client.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of results to return",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "The maximum number of results to skip",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customers response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PackageResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new package in the system",
+        "requestBody": {
+          "description": "Package to add to the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PackageBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "plant response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "pattern": "^[a-fA-F0-9]{24}$",
+                          "example": "507f1f77bcf86cd799439011"
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/PackageResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "checkoutLink": {
+                          "type": "string",
+                          "description": "The checkout link for this package.",
+                          "format": "uri",
+                          "example": "https://example.com/auto-login?token=abc123"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/packages/{_id}": {
+      "get": {
+        "description": "Returns all packages of the client.",
+        "parameters": [
+          {
+            "name": "_id",
+            "in": "path",
+            "description": "ID of the package to get (MongoDB ObjectId)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customers response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "checkoutLink": {
+                          "type": "string",
+                          "format": "uri",
+                          "example": "https://example.com/auto-login?token=abc123"
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/PackageResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update the a single package based on the ID supplied. This api should be used to activate and deactivate the package as well. Any changes that you do to the package will be only applied to new users. Everything for the users who are already subscribed to this package will stay the same.",
+        "parameters": [
+          {
+            "name": "_id",
+            "in": "path",
+            "description": "ID of the customer to delete (MongoDB ObjectId)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Data to update the package",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "deactivate": {
+                    "type": "boolean",
+                    "description": "Set to true to deactivate the package"
+                  },
+                  "activate": {
+                    "type": "boolean",
+                    "description": "Set to true to activate the package"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the package"
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Price of the package"
+                  },
+                  "interval": {
+                    "type": "string",
+                    "description": "Billing interval for the package"
+                  },
+                  "freeTrialDays": {
+                    "type": "integer",
+                    "description": "Number of free trial days for the package"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Plant deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invoices/pay": {
+      "post": {
+        "description": "Creates a new invoice in the system",
+        "requestBody": {
+          "description": "Invoice to add to the system",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "plant response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invoice created successfully"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "unexpected error",
@@ -132,40 +550,173 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "Customer": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
+          "firstName": {
+            "description": "The first name of the customer.",
             "type": "string"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "lastName": {
+            "description": "The last name of the customer.",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address of the customer.",
             "type": "string"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "CustomerResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "description": "The id of the customer.",
+            "type": "string"
           },
-          {
-            "required": [
-              "id"
-            ],
+          "firstName": {
+            "description": "The first name of the customer.",
+            "type": "string"
+          },
+          "lastName": {
+            "description": "The last name of the customer.",
+            "type": "string"
+          },
+          "email": {
+            "description": "Email address of the customer.",
+            "type": "string"
+          },
+          "autoLogin": {
+            "description": "Auto login details for the customer.",
             "type": "object",
             "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
+              "autoLoginUrl": {
+                "description": "The auto login URL for the customer.",
+                "type": "string",
+                "format": "uri"
+              },
+              "autoLoginCode": {
+                "description": "The auto login code for the customer.",
+                "type": "string"
               }
             }
           }
+        }
+      },
+      "PackageBody": {
+        "type": "object",
+        "required": [
+          "name",
+          "price",
+          "interval",
+          "freeTrialDays"
+        ],
+        "properties": {
+          "name": {
+            "description": "The name of the package.",
+            "type": "string"
+          },
+          "price": {
+            "description": "The price of the package.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "interval": {
+            "description": "The billing interval for the package. Possible values: `Daily, Weekly, Bi-Weekly, Monthly, Quarterly, Yearly`.",
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              "Daily",
+              "Weekly",
+              "Bi-Weekly",
+              "Monthly",
+              "Quarterly",
+              "Yearly"
+            ]
+          },
+          "freeTrialDays": {
+            "description": "The number of free trial days. Send 0 if no free trial days. `Min:0, Max:7`.",
+            "type": "integer",
+            "format": "int64",
+            "maximum": 7,
+            "default": 0,
+            "example": 7
+          }
+        }
+      },
+      "PackageResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The name of the package.",
+            "type": "string"
+          },
+          "price": {
+            "description": "The price of the package.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "interval": {
+            "description": "The billing interval for the package. Possible values: `Daily, Weekly, Bi-Weekly, Monthly, Quarterly, Yearly`.",
+            "type": "integer",
+            "format": "int64",
+            "enum": [
+              "Daily",
+              "Weekly",
+              "Bi-Weekly",
+              "Monthly",
+              "Quarterly",
+              "Yearly"
+            ]
+          },
+          "freeTrialDays": {
+            "description": "The number of free trial days. Send 0 if no free trial days. `Min:0, Max:7`.",
+            "type": "integer",
+            "format": "int64",
+            "maximum": 7,
+            "default": 0,
+            "example": 7
+          }
+        }
+      },
+      "InvoiceBody": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Invoice ID in their system",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "expiryDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The expiry date of the invoice",
+            "example": "2024-12-31T23:59:59Z"
+          },
+          "invoiceUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to access the invoice",
+            "example": "https://example.com/invoices/12345"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "description": "Subscription ID in our system",
+            "example": "sub_abc123"
+          },
+          "paidAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the invoice was paid",
+            "example": "2024-11-20T15:30:00Z"
+          }
+        },
+        "required": [
+          "_id",
+          "expiryDate",
+          "invoiceUrl",
+          "subscriptionId",
+          "paidAt"
         ]
       },
       "Error": {
