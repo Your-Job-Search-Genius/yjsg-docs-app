@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "http://localhost:6733/v1"
     }
   ],
   "security": [
@@ -39,6 +39,22 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "uniqueCustomerId",
+            "in": "query",
+            "description": "The unique customer Id of the user in your system.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The email of the customer to search.",
+            "schema": {
+              "type": "string"
             }
           }
         ],

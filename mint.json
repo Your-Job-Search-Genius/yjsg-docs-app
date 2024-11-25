@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "https://app.aijobexpert.com/assets/logo-ewuw9e4J.svg",
+    "light": "https://app.aijobexpert.com/assets/logo-ewuw9e4J.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -95,7 +95,7 @@
     {
       "group": "Invoices",
       "pages": [
-        "api-reference/invoices/pay"
+        "api-reference//invoices/pay"
       ]
     }
   ],
@@ -103,5 +103,10 @@
     "x": "https://x.com/mintlify",
     "github": "https://github.com/mintlify",
     "linkedin": "https://linkedin.com/company/mintlify"
+  },
+  "api":{
+    "playground": {
+      "disableProxy": true
+    }
   }
 }
