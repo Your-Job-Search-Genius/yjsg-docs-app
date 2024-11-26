@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:6733/v1"
+      "url": "https://api.aijobexpert.com/v1/healthcheck"
     }
   ],
   "security": [
@@ -107,11 +107,11 @@
                     "properties": {
                       "isPaidOutside": {
                         "type": "boolean",
-                        "description": "Will the customer pay outside our system. If the isPaidOutside is true then you have to use the payment api to refresh payment information every subscription cycle. If its false, you will redirect the user using the checkout link and payment will be taken on our system."
+                        "description": "Indicates whether the customer will pay outside our system. If true, use the payment API to refresh payment information at the start of each subscription cycle. If false, redirect the user using the checkout link, and payment will be processed through our system."
                       },
                       "uniqueCustomerId": {
                         "type": "string",
-                        "description": "This is unique id of the user in your system"
+                        "description": "he unique identifier for the user in your system. You can use the `GET /customers` API to filter users based on this identifier."
                       }
                     }
                   }
