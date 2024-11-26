@@ -27,8 +27,12 @@
   },
   "tabs": [
     {
-      "name": "API Reference",
-      "url": "api-reference"
+      "name": "Reseller API Reference",
+      "url": "api-reference/reseller"
+    },
+    {
+      "name": "Institution API Reference",
+      "url": "api-reference/institution"
     }
   ],
   "anchors": [
@@ -77,19 +81,28 @@
     {
       "group": "Customers",
       "pages": [
-        "api-reference/customers/get",
-        "api-reference/customers/getCustomer",
-        "api-reference/customers/create",
-        "api-reference/customers/delete"
+        "api-reference/reseller/customers/get",
+        "api-reference/reseller/customers/getCustomer",
+        "api-reference/reseller/customers/create",
+        "api-reference/reseller/customers/delete"
+      ]
+    },
+    {
+      "group": "Customers",
+      "pages": [
+        "api-reference/institution/customers/get",
+        "api-reference/institution/customers/getCustomer",
+        "api-reference/institution/customers/create",
+        "api-reference/institution/customers/delete"
       ]
     },
     {
       "group": "Packages",
       "pages": [
-        "api-reference/packages/create",
-        "api-reference/packages/get",
-        "api-reference/packages/getPackage",
-        "api-reference/packages/update"
+        "api-reference/reseller/packages/create",
+        "api-reference/reseller/packages/get",
+        "api-reference/reseller/packages/getPackage",
+        "api-reference/reseller/packages/update"
       ]
     },
     {
