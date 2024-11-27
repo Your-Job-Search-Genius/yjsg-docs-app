@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.aijobexpert.com/v1/healthcheck"
+      "url": "https://api.aijobexpert.com/v1"
     }
   ],
   "security": [
