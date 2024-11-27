@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "https://app.aijobexpert.com/assets/logo-ewuw9e4J.svg",
-    "light": "https://app.aijobexpert.com/assets/logo-ewuw9e4J.svg"
+    "dark": "/logo/dark-theme.svg",
+    "light": "/logo/light-theme.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -29,10 +29,6 @@
     {
       "name": "Reseller API Reference",
       "url": "api-reference/reseller"
-    },
-    {
-      "name": "Institution API Reference",
-      "url": "api-reference/institution"
     }
   ],
   "anchors": [
@@ -85,15 +81,6 @@
         "api-reference/reseller/customers/getCustomer",
         "api-reference/reseller/customers/create",
         "api-reference/reseller/customers/delete"
-      ]
-    },
-    {
-      "group": "Customers",
-      "pages": [
-        "api-reference/institution/customers/get",
-        "api-reference/institution/customers/getCustomer",
-        "api-reference/institution/customers/create",
-        "api-reference/institution/customers/delete"
       ]
     },
     {
