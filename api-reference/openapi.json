@@ -95,7 +95,8 @@
                   "firstName",
                   "lastName",
                   "email",
-                  "isPaidOutside"
+                  "isPaidOutside",
+                  "packageId"
                 ],
                 "type": "object",
                 "allOf": [
@@ -109,9 +110,13 @@
                         "type": "boolean",
                         "description": "Indicates whether the customer will pay outside our system. If true, use the payment API to refresh payment information at the start of each subscription cycle. If false, redirect the user using the checkout link, and payment will be processed through our system."
                       },
+                      "packageId": {
+                        "type": "string",
+                        "description": "Package id in our system"
+                      },
                       "uniqueCustomerId": {
                         "type": "string",
-                        "description": "he unique identifier for the user in your system. You can use the `GET /customers` API to filter users based on this identifier."
+                        "description": "The unique identifier for the user in your system. You can use the `GET /customers` API to filter users based on this identifier."
                       }
                     }
                   }
