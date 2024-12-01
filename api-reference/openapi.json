@@ -460,15 +460,25 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "deactivate": {
+                        "type": "boolean",
+                        "description": "Set to true to deactivate the package"
+                      },
+                      "activate": {
+                        "type": "boolean",
+                        "description": "Set to true to activate the package"
+                      }
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/PackageBody"
+                  }
+                ],
                 "properties": {
-                  "deactivate": {
-                    "type": "boolean",
-                    "description": "Set to true to deactivate the package"
-                  },
-                  "activate": {
-                    "type": "boolean",
-                    "description": "Set to true to activate the package"
-                  },
                   "name": {
                     "type": "string",
                     "description": "Name of the package"
@@ -626,12 +636,7 @@
       },
       "PackageBody": {
         "type": "object",
-        "required": [
-          "name",
-          "price",
-          "interval",
-          "freeTrialDays"
-        ],
+        "required": ["name", "price", "interval", "freeTrialDays"],
         "properties": {
           "name": {
             "description": "The name of the package.",
@@ -644,8 +649,7 @@
           },
           "interval": {
             "description": "The billing interval for the package. Possible values: `Daily, Weekly, Bi-Weekly, Monthly, Quarterly, Yearly`.",
-            "type": "integer",
-            "format": "int64",
+            "type": "string",
             "enum": [
               "Daily",
               "Weekly",
@@ -741,10 +745,7 @@
         ]
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "type": "object",
         "properties": {
           "error": {
